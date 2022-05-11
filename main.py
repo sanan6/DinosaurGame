@@ -1,11 +1,16 @@
 import pygame
 import pygame_menu
 from game_engine import start
+from ai import AIstart
 from settings import *
 
 def menu():
     pygame.init()
     surface = pygame.display.set_mode(SIZE)
+
+    icon_image = pygame.image.load('assets/images/icon.png')
+    pygame.display.set_caption('Dino Game')
+    pygame.display.set_icon(icon_image)
 
     mytheme = pygame_menu.themes.THEME_DEFAULT.copy()
     mytheme.background_color = pygame_menu.baseimage.BaseImage(image_path='assets/images/menu.png')
@@ -30,7 +35,7 @@ def menu():
     blanc = menu.add.button('')
     single_player = menu.add.button('single player', start)
     multiplayer = menu.add.button('multiplayer', pygame_menu.events.EXIT)
-    ai_mode = menu.add.button('ai Mode', pygame_menu.events.EXIT)
+    ai_mode = menu.add.button('ai Mode', AIstart)
     quit = menu.add.button('quit', pygame_menu.events.EXIT)
 
     single_player.set_font(font=pygame_menu.font.FONT_8BIT, font_size=32, color=(0, 0, 0),
@@ -46,6 +51,7 @@ def menu():
                   selected_color=(150, 150, 150), readonly_color=(0, 255, 0),
                   readonly_selected_color=(0, 255, 255), background_color=None, antialias=True)
     menu.mainloop(surface)
+
     pygame.display.update()
 
 if __name__ == '__main__':

@@ -1,10 +1,12 @@
 import pygame
 from pygame.locals import *
+from pygame.mixer import Sound
 from dinosaur import Dinosaur
 from settings import *
 import sys
 from collections import deque
 from environment import Cacti
+from environment import Fly
 import random
 
 class Game(object):
@@ -15,17 +17,22 @@ class Game(object):
         self.screen = pygame.display.set_mode(SIZE_GAME)
         self.started = 0
 
+        self.jump_sound = Sound("assets/sounds/jump2.wav")
+        self.death_sound = Sound("assets/sounds/death2.wav")
+        self.score_sound = Sound("assets/sounds/score2.wav")
+        self.score_sound.set_volume(0.1)
+
         self.background = pygame.image.load('assets/images/background.png').convert()
         self.background = pygame.transform.scale(self.background, SIZE_GAME)
 
-        self.dino = Dinosaur(WIN_WIDTH / 16, BASELINE)
+        self.dino = Dinosaur(WIN_WIDTH / 16)
         self.screen.blit(self.background, (0, 0))
         self.dino.draw(self.screen)
         pygame.display.flip()
 
         self.obstacles = deque()
         self.obstacles.append(Cacti(WIN_WIDTH))
-
+        
         self.slower_score = 0
         self.score = 0
 
@@ -39,17 +46,22 @@ class Game(object):
             self.obstacles.popleft()
         if self.obstacles[-1].X < WIN_WIDTH - (random.randint(3, 10) * CACTUS_WIDTH):
             self.obstacles.append(Cacti(WIN_WIDTH))
+        if self.obstacles[-1].X < WIN_WIDTH - (random.randint(3, 10) * CACTUS_WIDTH):
+            self.obstacles.append(Fly(WIN_WIDTH))
 
     def events(self):
-
         for event in pygame.event.get():
             if event.type == KEYDOWN and event.key == K_SPACE:
+                Sound.play(self.jump_sound)
                 self.dino.jump()
                 self.started = 1
 
             if event.type == KEYDOWN and event.key == K_DOWN:
                 self.dino.duck()
                 self.started = 1
+
+            if event.type == KEYUP and event.key == K_DOWN:
+                self.dino.un_duck()
 
             if event.type == QUIT or (event.type == KEYDOWN and event.key == K_ESCAPE):
                 pygame.quit()
@@ -58,6 +70,7 @@ class Game(object):
     def game_over(self):
         score_message = self.game_font.render(str(self.score), True, (0, 0, 0))
         message = self.game_font.render("GAME OVER!", True, (0, 0, 0))
+        Sound.play(self.death_sound)
 
         for i in range(FPS * 5):
 
@@ -69,10 +82,11 @@ class Game(object):
             self.screen.blit(message, (WIN_WIDTH / 2 - message.get_width() / 2, 50))
 
             pygame.display.update()
+
             self.clock.tick(FPS)
 
     def game_main(self):
-
+        
         while True:
             self.events()
 
@@ -91,13 +105,18 @@ class Game(object):
             self.dino.draw(self.screen)
             for obstacle in self.obstacles:
                 obstacle.draw(self.screen)
-
+                
             score_message = self.game_font.render(str(self.score), True, (0, 0, 0))
             self.screen.blit(score_message, (WIN_WIDTH / 2 - score_message.get_width() / 2, 20))
+
+            if self.score > 0:
+                if self.score % 100 == 0:
+                    Sound.play(self.score_sound)
 
             pygame.display.update()
 
             self.clock.tick(FPS)
+
 
 def start():
     new_game = Game()
