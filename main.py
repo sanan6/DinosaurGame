@@ -1,12 +1,18 @@
 import pygame
 import pygame_menu
 from game_engine import start
+from multiplayer import multiplayer_run
 from ai import AIstart
 from settings import *
 
 def menu():
+    """
+    This creates the menu which starts when we open the program.
+
+    :return: None
+    """
     pygame.init()
-    surface = pygame.display.set_mode(SIZE)
+    surface = pygame.display.set_mode(SIZE) #global setting-ek egy külön fájlból
 
     icon_image = pygame.image.load('assets/images/icon.png')
     pygame.display.set_caption('Dino Game')
@@ -19,7 +25,7 @@ def menu():
     mytheme.widget_selection_effect = pygame_menu.widgets.HighlightSelection(border_width=1, margin_x=16, margin_y=8)
     mytheme.widget_selection_color = pygame.Color(100,100,100)
     mytheme.widget_box_background_color = pygame.Color(0,0,0)
-    mytheme.widget_cursor = pygame.cursors.arrow
+    mytheme.widget_cursor = pygame.cursors.arrow #lehet csinálni menő pterodaktilusz alakút a dokumentációból
     mytheme.title_font = pygame_menu.font.FONT_8BIT
 
     menu = pygame_menu.Menu('Dinosaur Game', WIN_WIDTH/3, WIN_HEIGHT, theme=mytheme)
@@ -34,7 +40,7 @@ def menu():
 
     blanc = menu.add.button('')
     single_player = menu.add.button('single player', start)
-    multiplayer = menu.add.button('multiplayer', pygame_menu.events.EXIT)
+    multiplayer = menu.add.button('multiplayer', multiplayer_run)
     ai_mode = menu.add.button('ai Mode', AIstart)
     quit = menu.add.button('quit', pygame_menu.events.EXIT)
 

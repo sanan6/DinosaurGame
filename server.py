@@ -2,6 +2,7 @@ import socket
 from _thread import start_new_thread
 import pickle
 import time
+import random
 from settings import *
 
 
@@ -20,6 +21,7 @@ class Server(object):
         self.address = address
         self.port = port
         self.server_size = server_size
+        self.seed = random.randint(-41369, 41369)
         self.soc = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.players = []  # list to contain current data of all players
         self.running_threads = 0
@@ -33,7 +35,7 @@ class Server(object):
         :param player_id: unique identifier of the player
         :return: None
         """
-        conn.sendall(pickle.dumps([self.server_size]))
+        conn.sendall(pickle.dumps([self.server_size, self.seed]))
         print("Connected")
         while not self.game_started:
             if self.server_size-self.running_threads == 0:

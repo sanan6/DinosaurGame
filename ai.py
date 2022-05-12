@@ -29,7 +29,7 @@ class AIGame(Game):
         obstacles.append(Cacti(WIN_WIDTH))
 
         # Creating lists holding the genome itself, the NN associated with the genome and the
-        # bird object that uses that network to play
+        # dino object that uses that network to play
         nets = []
         gen = []
         dinos = []
@@ -62,13 +62,14 @@ class AIGame(Game):
             if len(dinos) > 0:
                 if len(obstacles) > 1 and dinos[0].X > obstacles[0].X + CACTUS_THICC:
                     # determine whether to use the first or second
-                    obstacle_ind = 1  # obstacle on the screen for neural network input
+                    # obstacle on the screen for neural network input
+                    obstacle_ind = 1
 
             for i, dino in enumerate(dinos):  # give each dino a fitness of 0.1 for each frame it stays alive
                 gen[i].fitness += 0.05
                 dino.update()
 
-                # send dino location, distance from next obstacle, what kind of obstcale it is and
+                # send dino location, distance from next obstacle, what kind of obstacle it is and
                 # determine from network whether to jump or not
                 output = nets[dinos.index(dino)].activate(
                     (dino.Y, abs(dino.X + AIDINO_WIDTH - obstacles[obstacle_ind].X), obstacles[obstacle_ind].is_cactus))
@@ -147,3 +148,4 @@ class AIGame(Game):
 def AIstart():
     new_game = AIGame()
     new_game.run()
+    pygame.display.set_mode(SIZE)
